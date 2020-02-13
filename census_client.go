@@ -90,5 +90,5 @@ func (c *CensusClient) createRequestURL(query *query) string {
 	ns := c.collectionNamespace
 
 	encArgs := query.String()
-	return EndpointCollectionGet(sID, ns, encArgs)
+	return endpointCollectionGet(sID, ns, encArgs)
 }
