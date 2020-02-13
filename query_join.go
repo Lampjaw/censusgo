@@ -7,65 +7,72 @@ import "fmt"
 
 type queryJoin struct {
 	censusOperator
-	list       bool             `queryProp:"list"`
-	outer      bool             `queryProp:"outer,default=true"`
-	show       []string         `queryProp:"show"`
-	hide       []string         `queryProp:"hide"`
-	terms      []*queryArgument `queryProp:"terms"`
-	on         string           `queryProp:"on"`
-	to         string           `queryProp:"to"`
-	injectAt   string           `queryProp:"inject_at"`
 	join       []*queryJoin
 	collection string
+	List       bool             `queryProp:"list"`
+	Outer      bool             `queryProp:"outer,default=true"`
+	Show       []string         `queryProp:"show"`
+	Hide       []string         `queryProp:"hide"`
+	Terms      []*queryArgument `queryProp:"terms"`
+	On         string           `queryProp:"on"`
+	To         string           `queryProp:"to"`
+	InjectAt   string           `queryProp:"inject_at"`
 }
 
 func newQueryJoin(collection string) *queryJoin {
 	return &queryJoin{
-		list:       false,
-		outer:      true,
-		show:       make([]string, 0),
-		hide:       make([]string, 0),
-		terms:      make([]*queryArgument, 0),
-		on:         "",
-		to:         "",
-		injectAt:   "",
 		join:       make([]*queryJoin, 0),
 		collection: collection,
+		List:       false,
+		Outer:      true,
+		Show:       make([]string, 0),
+		Hide:       make([]string, 0),
+		Terms:      make([]*queryArgument, 0),
+		On:         "",
+		To:         "",
+		InjectAt:   "",
 	}
 }
 
-func (j *queryJoin) IsList(isList bool) {
-	j.list = isList
+func (j *queryJoin) IsList(isList bool) *queryJoin {
+	j.List = isList
+	return j
 }
 
-func (j *queryJoin) IsOuterJoin(isOuter bool) {
-	j.outer = isOuter
+func (j *queryJoin) IsOuterJoin(isOuter bool) *queryJoin {
+	j.Outer = isOuter
+	return j
 }
 
-func (j *queryJoin) ShowFields(fields ...string) {
-	j.show = fields
+func (j *queryJoin) ShowFields(fields ...string) *queryJoin {
+	j.Show = fields
+	return j
 }
 
-func (j *queryJoin) HideFields(fields ...string) {
-	j.hide = fields
+func (j *queryJoin) HideFields(fields ...string) *queryJoin {
+	j.Hide = fields
+	return j
 }
 
-func (j *queryJoin) OnField(field string) {
-	j.on = field
+func (j *queryJoin) OnField(field string) *queryJoin {
+	j.On = field
+	return j
 }
 
-func (j *queryJoin) ToField(field string) {
-	j.to = field
+func (j *queryJoin) ToField(field string) *queryJoin {
+	j.To = field
+	return j
 }
 
-func (j *queryJoin) WithInjectAt(field string) {
-	j.injectAt = field
+func (j *queryJoin) WithInjectAt(field string) *queryJoin {
+	j.InjectAt = field
+	return j
 }
 
 func (j *queryJoin) Where(field string) *queryOperand {
 	arg := newQueryArgument(field)
 
-	j.terms = append(j.terms, arg)
+	j.Terms = append(j.Terms, arg)
 
 	return arg.operand
 }
@@ -77,7 +84,7 @@ func (j *queryJoin) JoinCollection(collection string) *queryJoin {
 }
 
 func (j *queryJoin) String() string {
-	baseString := j.BaseString()
+	baseString := j.baseString(j)
 
 	if len(baseString) > 0 {
 		baseString = "^" + baseString
