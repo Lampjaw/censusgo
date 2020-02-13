@@ -7,33 +7,36 @@ import "fmt"
 
 type queryTree struct {
 	censusOperator
-	list      bool   `queryProp:"list"`
-	prefix    string `queryProp:"prefix"`
-	start     string `queryProp:"start"`
 	tree      []*queryTree
 	treeField string
+	List      bool   `queryProp:"list"`
+	Prefix    string `queryProp:"prefix"`
+	Start     string `queryProp:"start"`
 }
 
 func newQueryTree(field string) *queryTree {
 	return &queryTree{
-		list:      false,
-		prefix:    "",
-		start:     "",
+		List:      false,
+		Prefix:    "",
+		Start:     "",
 		tree:      make([]*queryTree, 0),
 		treeField: field,
 	}
 }
 
-func (t *queryTree) IsList(isList bool) {
-	t.list = isList
+func (t *queryTree) IsList(isList bool) *queryTree {
+	t.List = isList
+	return t
 }
 
-func (t *queryTree) GroupPrefix(prefix string) {
-	t.prefix = prefix
+func (t *queryTree) GroupPrefix(prefix string) *queryTree {
+	t.Prefix = prefix
+	return t
 }
 
-func (t *queryTree) StartField(field string) {
-	t.start = field
+func (t *queryTree) StartField(field string) *queryTree {
+	t.Start = field
+	return t
 }
 
 func (t *queryTree) TreeField(field string) *queryTree {
@@ -43,7 +46,7 @@ func (t *queryTree) TreeField(field string) *queryTree {
 }
 
 func (t *queryTree) String() string {
-	baseString := t.BaseString()
+	baseString := t.baseString(t)
 
 	if len(baseString) > 0 {
 		baseString = "^" + baseString

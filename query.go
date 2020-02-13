@@ -12,23 +12,23 @@ type query struct {
 	Collection      string
 	censusClient    *CensusClient
 	terms           []*queryArgument
-	exactMatchFirst bool         `queryProp:"exactMatchFirst"`
-	timing          bool         `queryProp:"timing"`
-	includeNull     bool         `queryProp:"includeNull"`
-	caseSensitive   bool         `queryProp:"case,default=true"`
-	retry           bool         `queryProp:"retry,default=true"`
-	limit           int          `queryProp:"limit,default=-1"`
-	limitPerDB      int          `queryProp:"limitPerDB,default=-1"`
-	start           int          `queryProp:"start,default=-1"`
-	show            []string     `queryProp:"show"`
-	hide            []string     `queryProp:"hide"`
-	sort            []string     `queryProp:"sort"`
-	has             []string     `queryProp:"has"`
-	resolve         []string     `queryProp:"resolve"`
-	join            []*queryJoin `queryProp:"join"`
-	tree            []*queryTree `queryProp:"tree"`
-	distinct        string       `queryProp:"distinct"`
-	language        string       `queryProp:"lang"`
+	ExactMatchFirst bool         `queryProp:"exactMatchFirst"`
+	Timing          bool         `queryProp:"timing"`
+	IncludeNull     bool         `queryProp:"includeNull"`
+	CaseSensitive   bool         `queryProp:"case,default=true"`
+	Retry           bool         `queryProp:"retry,default=true"`
+	Limit           int          `queryProp:"limit,default=-1"`
+	LimitPerDB      int          `queryProp:"limitPerDB,default=-1"`
+	Start           int          `queryProp:"start,default=-1"`
+	Show            []string     `queryProp:"show"`
+	Hide            []string     `queryProp:"hide"`
+	Sort            []string     `queryProp:"sort"`
+	Has             []string     `queryProp:"has"`
+	Resolve         []string     `queryProp:"resolve"`
+	Join            []*queryJoin `queryProp:"join"`
+	Tree            []*queryTree `queryProp:"tree"`
+	Distinct        string       `queryProp:"distinct"`
+	Language        string       `queryProp:"lang"`
 }
 
 func newQuery(collection string, censusClient *CensusClient) *query {
@@ -36,35 +36,35 @@ func newQuery(collection string, censusClient *CensusClient) *query {
 		Collection:      collection,
 		censusClient:    censusClient,
 		terms:           make([]*queryArgument, 0),
-		exactMatchFirst: false,
-		timing:          false,
-		includeNull:     false,
-		caseSensitive:   true,
-		retry:           true,
-		limit:           -1,
-		limitPerDB:      -1,
-		start:           -1,
-		show:            make([]string, 0),
-		hide:            make([]string, 0),
-		sort:            make([]string, 0),
-		has:             make([]string, 0),
-		resolve:         make([]string, 0),
-		join:            make([]*queryJoin, 0),
-		tree:            make([]*queryTree, 0),
-		distinct:        "",
-		language:        "",
+		ExactMatchFirst: false,
+		Timing:          false,
+		IncludeNull:     false,
+		CaseSensitive:   true,
+		Retry:           true,
+		Limit:           -1,
+		LimitPerDB:      -1,
+		Start:           -1,
+		Show:            make([]string, 0),
+		Hide:            make([]string, 0),
+		Sort:            make([]string, 0),
+		Has:             make([]string, 0),
+		Resolve:         make([]string, 0),
+		Join:            make([]*queryJoin, 0),
+		Tree:            make([]*queryTree, 0),
+		Distinct:        "",
+		Language:        "",
 	}
 }
 
 func (q *query) JoinCollection(collection string) *queryJoin {
 	newJoin := newQueryJoin(collection)
-	q.join = append(q.join, newJoin)
+	q.Join = append(q.Join, newJoin)
 	return newJoin
 }
 
 func (q *query) TreeField(field string) *queryTree {
 	newTree := newQueryTree(field)
-	q.tree = append(q.tree, newTree)
+	q.Tree = append(q.Tree, newTree)
 	return newTree
 }
 
@@ -75,27 +75,27 @@ func (q *query) Where(field string) *queryOperand {
 }
 
 func (q *query) ShowFields(fields ...string) *query {
-	q.show = append(q.show, fields...)
+	q.Show = append(q.Show, fields...)
 	return q
 }
 
 func (q *query) HideFields(fields ...string) *query {
-	q.hide = append(q.hide, fields...)
+	q.Hide = append(q.Hide, fields...)
 	return q
 }
 
 func (q *query) SetLimit(limit int) *query {
-	q.limit = limit
+	q.Limit = limit
 	return q
 }
 
 func (q *query) SetStart(start int) *query {
-	q.start = start
+	q.Start = start
 	return q
 }
 
 func (q *query) AddResolve(resolves ...string) *query {
-	q.resolve = append(q.resolve, resolves...)
+	q.Resolve = append(q.Resolve, resolves...)
 	return q
 }
 
@@ -119,7 +119,7 @@ func (q *query) SetLanguage(language CensusLanguage) *query {
 }
 
 func (q *query) SetLanguageString(language string) *query {
-	q.language = language
+	q.Language = language
 	return q
 }
 
@@ -136,7 +136,7 @@ func (q *query) GetUrl() string {
 }
 
 func (q *query) String() string {
-	baseString := q.BaseString()
+	baseString := q.baseString(q)
 
 	var terms []string
 	for _, t := range q.terms {

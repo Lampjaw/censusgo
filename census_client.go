@@ -49,11 +49,11 @@ func (c *CensusClient) executeQueryBatch(query *query) ([]interface{}, error) {
 
 	batchResult := make([]interface{}, 0)
 
-	if query.limit <= 0 {
+	if query.Limit <= 0 {
 		query.SetLimit(defaultBatchLimit)
 	}
 
-	if query.start < 0 {
+	if query.Start < 0 {
 		query.SetStart(count)
 	}
 
@@ -62,14 +62,14 @@ func (c *CensusClient) executeQueryBatch(query *query) ([]interface{}, error) {
 		return nil, err
 	}
 
-	if len(result) < query.limit {
+	if len(result) < query.Limit {
 		return result, nil
 	}
 
 	for ok := true; ok; ok = len(result) > 0 {
 		batchResult = append(batchResult, result...)
 
-		if len(result) < query.limit {
+		if len(result) < query.Limit {
 			return batchResult, nil
 		}
 

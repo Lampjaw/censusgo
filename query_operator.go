@@ -21,52 +21,56 @@ type censusOperator struct {
 	iCensusOperator
 }
 
-func (o *censusOperator) BaseString() string {
+func (o *censusOperator) baseString(op iCensusOperator) string {
 	queryArgs := make([]string, 0)
 
-	t := reflect.ValueOf(o)
+	v := reflect.ValueOf(op)
+	ind := reflect.Indirect(v)
+	s := ind.Type()
 
-	for i := 0; i < t.NumField(); i++ {
-		if tag, ok := t.Type().Field(i).Tag.Lookup(queryTagName); ok {
-			fieldValue := t.Field(i).Interface()
+	for i := 0; i < s.NumField(); i++ {
+		if tag, ok := s.Field(i).Tag.Lookup(queryTagName); ok {
+			fieldValue := ind.Field(i)
+			fieldType := fieldValue.Type()
 
-			if o.isValueNilOrDefault(fieldValue) || o.isValueTagDefault(fieldValue, tag) {
+			if o.isValueNilOrDefault(fieldValue, fieldType) || o.isValueTagDefault(fieldValue, tag) {
 				continue
 			}
 
-			propName := strings.Split(tag, ",")[:1]
-			propValue := o.getStringValue(fieldValue)
+			propName := strings.Split(tag, ",")[0]
+			propValue := o.getStringValue(fieldValue, op)
 
-			queryArgs = append(queryArgs, fmt.Sprintf(o.getKeyValueStringFormat(), propName, propValue))
+			queryArgs = append(queryArgs, fmt.Sprintf(op.getKeyValueStringFormat(), propName, propValue))
 		}
 	}
 
-	return strings.Join(queryArgs, o.getPropertySpacer())
+	return strings.Join(queryArgs, op.getPropertySpacer())
 }
 
-func (o *censusOperator) isValueNilOrDefault(value interface{}) bool {
-	if value == nil {
-		return true
-	}
+func (o *censusOperator) isValueNilOrDefault(value reflect.Value, valType reflect.Type) bool {
+	vi := value.Interface()
 
-	switch v := value.(type) {
-	case string:
-		return v == ""
-	case []interface{}:
-		return len(v) == 0
-	case bool:
-		return v == false
+	switch reflect.TypeOf(vi).Kind() {
+	case reflect.String:
+		return value.String() == ""
+	case reflect.Slice:
+		return value.Len() == 0
+	case reflect.Bool:
+		return value.Bool() == false
 	}
 
 	return false
 }
 
-func (o *censusOperator) isValueTagDefault(fieldValue interface{}, tag string) bool {
+func (o *censusOperator) isValueTagDefault(value reflect.Value, tag string) bool {
+	vi := value.Interface()
 	tagArgs := strings.Split(tag, ",")
 
 	var defaultValue string
-	if defaultSet, _ := fmt.Sscanf(strings.Join(tagArgs[1:], ","), "default=%s", &defaultValue); defaultSet > 0 {
-		if fieldValue.(string) == defaultValue {
+	defaultSet, _ := fmt.Sscanf(strings.Join(tagArgs[1:], ","), "default=%s", &defaultValue)
+
+	if defaultSet > 0 {
+		if fmt.Sprintf("%v", vi) == defaultValue {
 			return true
 		}
 	}
@@ -74,19 +78,18 @@ func (o *censusOperator) isValueTagDefault(fieldValue interface{}, tag string) b
 	return false
 }
 
-func (o *censusOperator) getStringValue(value interface{}) string {
-	valType := reflect.TypeOf(value).Kind()
+func (o *censusOperator) getStringValue(value reflect.Value, op iCensusOperator) string {
+	vi := value.Interface()
+	rt := reflect.ValueOf(vi).Kind()
 
-	if valType != reflect.String && valType == reflect.Array {
-		values := value.([]interface{})
-
+	if rt == reflect.Slice {
 		var sValues []string
-		for _, v := range values {
-			sValues = append(sValues, v.(string))
+		for i := 0; i < value.Len(); i++ {
+			sValues = append(sValues, fmt.Sprintf("%v", value.Index(i)))
 		}
 
-		return strings.Join(sValues, o.getTermSpacer())
+		return strings.Join(sValues, op.getTermSpacer())
 	}
 
-	return value.(string)
+	return fmt.Sprintf("%v", value)
 }
