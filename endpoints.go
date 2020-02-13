@@ -4,10 +4,10 @@
 package censusgo
 
 var (
-	EndpointCensus = "http://census.daybreakgames.com/"
+	endpointCensus = "http://census.daybreakgames.com/"
 
-	EndpointServiceID       = func(sID string) string { return EndpointCensus + "s:" + sID + "/" }
-	EndpointCollection      = func(sID, ns, op, col string) string { return EndpointServiceID(sID) + op + "/" + ns + "/" + col }
-	EndpointCollectionGet   = func(sID, ns, col string) string { return EndpointCollection(sID, ns, "get", col) }
-	EndpointCollectionCount = func(sID, ns, col string) string { return EndpointCollection(sID, ns, "count", col) }
+	endpointServiceID       = func(sID string) string { return endpointCensus + "s:" + sID + "/" }
+	endpointCollection      = func(sID, ns, op, col string) string { return endpointServiceID(sID) + op + "/" + ns + "/" + col }
+	endpointCollectionGet   = func(sID, ns, col string) string { return endpointCollection(sID, ns, "get", col) }
+	endpointCollectionCount = func(sID, ns, col string) string { return endpointCollection(sID, ns, "count", col) }
 )
