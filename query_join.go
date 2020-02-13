@@ -84,7 +84,7 @@ func (j *queryJoin) JoinCollection(collection string) *queryJoin {
 }
 
 func (j *queryJoin) String() string {
-	baseString := j.baseString(j)
+	baseString := operatorToString(j)
 
 	if len(baseString) > 0 {
 		baseString = "^" + baseString

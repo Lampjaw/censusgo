@@ -46,7 +46,7 @@ func (t *queryTree) TreeField(field string) *queryTree {
 }
 
 func (t *queryTree) String() string {
-	baseString := t.baseString(t)
+	baseString := operatorToString(t)
 
 	if len(baseString) > 0 {
 		baseString = "^" + baseString

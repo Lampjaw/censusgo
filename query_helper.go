@@ -11,17 +11,13 @@ import (
 
 const queryTagName = "queryProp"
 
-type iCensusOperator interface {
+type censusOperator interface {
 	getKeyValueStringFormat() string
 	getPropertySpacer() string
 	getTermSpacer() string
 }
 
-type censusOperator struct {
-	iCensusOperator
-}
-
-func (o *censusOperator) baseString(op iCensusOperator) string {
+func operatorToString(op censusOperator) string {
 	queryArgs := make([]string, 0)
 
 	v := reflect.ValueOf(op)
@@ -33,12 +29,12 @@ func (o *censusOperator) baseString(op iCensusOperator) string {
 			fieldValue := ind.Field(i)
 			fieldType := fieldValue.Type()
 
-			if o.isValueNilOrDefault(fieldValue, fieldType) || o.isValueTagDefault(fieldValue, tag) {
+			if isValueNilOrDefault(fieldValue, fieldType) || isValueTagDefault(fieldValue, tag) {
 				continue
 			}
 
 			propName := strings.Split(tag, ",")[0]
-			propValue := o.getStringValue(fieldValue, op)
+			propValue := getPropertyValueAsString(fieldValue, op)
 
 			queryArgs = append(queryArgs, fmt.Sprintf(op.getKeyValueStringFormat(), propName, propValue))
 		}
@@ -47,7 +43,7 @@ func (o *censusOperator) baseString(op iCensusOperator) string {
 	return strings.Join(queryArgs, op.getPropertySpacer())
 }
 
-func (o *censusOperator) isValueNilOrDefault(value reflect.Value, valType reflect.Type) bool {
+func isValueNilOrDefault(value reflect.Value, valType reflect.Type) bool {
 	vi := value.Interface()
 
 	switch reflect.TypeOf(vi).Kind() {
@@ -62,7 +58,7 @@ func (o *censusOperator) isValueNilOrDefault(value reflect.Value, valType reflec
 	return false
 }
 
-func (o *censusOperator) isValueTagDefault(value reflect.Value, tag string) bool {
+func isValueTagDefault(value reflect.Value, tag string) bool {
 	vi := value.Interface()
 	tagArgs := strings.Split(tag, ",")
 
@@ -78,7 +74,7 @@ func (o *censusOperator) isValueTagDefault(value reflect.Value, tag string) bool
 	return false
 }
 
-func (o *censusOperator) getStringValue(value reflect.Value, op iCensusOperator) string {
+func getPropertyValueAsString(value reflect.Value, op censusOperator) string {
 	vi := value.Interface()
 	rt := reflect.ValueOf(vi).Kind()
 
