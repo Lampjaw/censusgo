@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	b := censusgo.NewQueryBuilder("LampjawScraper", "ps2")
+	b := censusgo.NewQueryBuilder("example", "ps2")
 	q := b.NewQuery("character")
 	q.Where("name.first_lower").Equals("lampjaw")
 
