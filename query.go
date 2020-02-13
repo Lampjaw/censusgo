@@ -136,7 +136,7 @@ func (q *query) GetUrl() string {
 }
 
 func (q *query) String() string {
-	baseString := q.baseString(q)
+	baseString := operatorToString(q)
 
 	var terms []string
 	for _, t := range q.terms {
