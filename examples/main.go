@@ -11,6 +11,11 @@ func main() {
 	q := b.NewQuery("character")
 	q.Where("name.first_lower").Equals("lampjaw")
 
-	result, _ := q.GetResults()
-	log.Printf("%+v", result[0])
+	result, err := q.GetResults()
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+	log.Printf("%s", result)
 }
