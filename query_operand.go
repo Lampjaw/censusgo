@@ -97,5 +97,5 @@ func (o *queryOperand) getComparatorString() string {
 	if t, ok := o.comparator.(time.Time); ok {
 		return t.Format("2006-01-02 15:04:05")
 	}
-	return fmt.Sprintf("%s", o.comparator)
+	return fmt.Sprintf("%v", o.comparator)
 }
