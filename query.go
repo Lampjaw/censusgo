@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-type query struct {
+// Query is the expression root for a census query
+type Query struct {
 	censusOperator
 	Collection      string
 	censusClient    *CensusClient
@@ -32,8 +33,9 @@ type query struct {
 	Language        string       `queryProp:"lang"`
 }
 
-func newQuery(collection string, censusClient *CensusClient) *query {
-	return &query{
+// NewQuery creates a new Query object
+func NewQuery(collection string, censusClient *CensusClient) *Query {
+	return &Query{
 		Collection:      collection,
 		censusClient:    censusClient,
 		terms:           make([]*queryArgument, 0),
@@ -57,50 +59,59 @@ func newQuery(collection string, censusClient *CensusClient) *query {
 	}
 }
 
-func (q *query) JoinCollection(collection string) *queryJoin {
+// JoinCollection joins the query with another collection
+func (q *Query) JoinCollection(collection string) *queryJoin {
 	newJoin := newQueryJoin(collection)
 	q.Join = append(q.Join, newJoin)
 	return newJoin
 }
 
-func (q *query) TreeField(field string) *queryTree {
+// TreeField creates a tree with a specific field
+func (q *Query) TreeField(field string) *queryTree {
 	newTree := newQueryTree(field)
 	q.Tree = append(q.Tree, newTree)
 	return newTree
 }
 
-func (q *query) Where(field string) *queryOperand {
+// Where begins an argument expression with a field designation
+func (q *Query) Where(field string) *queryOperand {
 	newArg := newQueryArgument(field)
 	q.terms = append(q.terms, newArg)
 	return newArg.operand
 }
 
-func (q *query) ShowFields(fields ...string) *query {
+// ShowFields lists the specific fields to include from each record
+func (q *Query) ShowFields(fields ...string) *Query {
 	q.Show = append(q.Show, fields...)
 	return q
 }
 
-func (q *query) HideFields(fields ...string) *query {
+// HideFields lists the specific fields to exclude from each record
+func (q *Query) HideFields(fields ...string) *Query {
 	q.Hide = append(q.Hide, fields...)
 	return q
 }
 
-func (q *query) SetLimit(limit int) *query {
+// SetLimit sets the maximum number of records to return
+func (q *Query) SetLimit(limit int) *Query {
 	q.Limit = limit
 	return q
 }
 
-func (q *query) SetStart(start int) *query {
+// SetStart sets the record to begin the query from if the collection isn't stored in a cluster
+func (q *Query) SetStart(start int) *Query {
 	q.Start = start
 	return q
 }
 
-func (q *query) AddResolve(resolves ...string) *query {
+// AddResolve adds resolution effects to the query
+func (q *Query) AddResolve(resolves ...string) *Query {
 	q.Resolve = append(q.Resolve, resolves...)
 	return q
 }
 
-func (q *query) SetLanguage(language CensusLanguage) *query {
+// SetLanguage sets the localization string set to only return a specific language
+func (q *Query) SetLanguage(language CensusLanguage) *Query {
 	switch language {
 	case LangEnglish:
 		return q.SetLanguageString("en")
@@ -119,12 +130,14 @@ func (q *query) SetLanguage(language CensusLanguage) *query {
 	return q
 }
 
-func (q *query) SetLanguageString(language string) *query {
+// SetLanguageString sets the localization string set to only return a specific language
+func (q *Query) SetLanguageString(language string) *Query {
 	q.Language = language
 	return q
 }
 
-func (q *query) GetResults() ([]byte, error) {
+// GetResults returns the records from the census API as stated in the query expression
+func (q *Query) GetResults() ([]byte, error) {
 	res, err := q.censusClient.executeQuery(q)
 	if err != nil {
 		return nil, err
@@ -132,7 +145,8 @@ func (q *query) GetResults() ([]byte, error) {
 	return json.Marshal(res)
 }
 
-func (q *query) GetResultsBatch() ([]byte, error) {
+// GetResultsBatch returns ALL records from the census API as stated in the query expression in batches
+func (q *Query) GetResultsBatch() ([]byte, error) {
 	res, err := q.censusClient.executeQueryBatch(q)
 	if err != nil {
 		return nil, err
@@ -140,11 +154,12 @@ func (q *query) GetResultsBatch() ([]byte, error) {
 	return json.Marshal(res)
 }
 
-func (q *query) GetUrl() string {
+// GetURL returns the URL equivalent of the query expression
+func (q *Query) GetURL() string {
 	return q.censusClient.createRequestURL(q)
 }
 
-func (q *query) String() string {
+func (q *Query) String() string {
 	baseString := operatorToString(q)
 
 	var terms []string
@@ -167,14 +182,14 @@ func (q *query) String() string {
 	return q.Collection + "/" + baseString + sTerms
 }
 
-func (q *query) getKeyValueStringFormat() string {
+func (q *Query) getKeyValueStringFormat() string {
 	return "c:%s=%s"
 }
 
-func (q *query) getPropertySpacer() string {
+func (q *Query) getPropertySpacer() string {
 	return "&"
 }
 
-func (q *query) getTermSpacer() string {
+func (q *Query) getTermSpacer() string {
 	return ","
 }

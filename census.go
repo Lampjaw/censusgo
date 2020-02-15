@@ -3,18 +3,22 @@
 
 package censusgo
 
-const VERSION = "1.0.0"
+// VERSION for semver
+const VERSION = "1.1.0"
 
+// QueryBuilder is a factory used to generate census queries that share the same census service ID and collection namespace
 type QueryBuilder struct {
 	CensusClient *CensusClient
 }
 
+// NewQueryBuilder returns a new QueryBuilder object
 func NewQueryBuilder(serviceID string, collectionNamespace string) *QueryBuilder {
 	return &QueryBuilder{
 		CensusClient: NewCensusClient(serviceID, collectionNamespace),
 	}
 }
 
-func (b *QueryBuilder) NewQuery(collection string) *query {
-	return newQuery(collection, b.CensusClient)
+// NewQuery creates a new census query expression
+func (b *QueryBuilder) NewQuery(collection string) *Query {
+	return NewQuery(collection, b.CensusClient)
 }
