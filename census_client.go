@@ -12,12 +12,14 @@ import (
 
 const defaultBatchLimit = 500
 
+// CensusClient is an object that retains a client and census configuration states between generated queries
 type CensusClient struct {
 	serviceID           string
 	collectionNamespace string
 	client              *http.Client
 }
 
+// NewCensusClient creates a CensusClient object
 func NewCensusClient(serviceID string, collectionNamespace string) *CensusClient {
 	return &CensusClient{
 		serviceID:           serviceID,
@@ -26,7 +28,7 @@ func NewCensusClient(serviceID string, collectionNamespace string) *CensusClient
 	}
 }
 
-func (c *CensusClient) executeQuery(query *query) ([]interface{}, error) {
+func (c *CensusClient) executeQuery(query *Query) ([]interface{}, error) {
 	requestURL := c.createRequestURL(query)
 
 	resp, err := c.client.Get(requestURL)
@@ -50,7 +52,7 @@ func (c *CensusClient) executeQuery(query *query) ([]interface{}, error) {
 	return contentBody[propertyIndex], nil
 }
 
-func (c *CensusClient) executeQueryBatch(query *query) ([]interface{}, error) {
+func (c *CensusClient) executeQueryBatch(query *Query) ([]interface{}, error) {
 	count := 0
 
 	batchResult := make([]interface{}, 0)
@@ -91,7 +93,7 @@ func (c *CensusClient) executeQueryBatch(query *query) ([]interface{}, error) {
 	return batchResult, nil
 }
 
-func (c *CensusClient) createRequestURL(query *query) string {
+func (c *CensusClient) createRequestURL(query *Query) string {
 	sID := c.serviceID
 	ns := c.collectionNamespace
 

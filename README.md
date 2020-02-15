@@ -176,5 +176,5 @@ Tree objects have the following methods:
 ### Getting the url of the query
 
 ```go
-url := query.GetUrl()
+url := query.GetURL()
 ```
