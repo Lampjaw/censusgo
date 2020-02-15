@@ -72,7 +72,7 @@ query := builder.NewQuery("character")
 ### Returning data from the query
 
 There are two methods of query resolution: `GetResults()` and `GetResultsBatch()`.
-Both methods return type `[]interface{}` but execute the query differently. 
+Both methods return type `[]interface{}` as a `[]byte` but execute the query differently. 
 
 `GetResults()` will only return the number of results or less of the limit specified or a single result if no limit is set.
 

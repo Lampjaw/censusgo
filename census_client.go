@@ -36,9 +36,15 @@ func (c *CensusClient) executeQuery(query *query) ([]interface{}, error) {
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 
 	var contentBody map[string][]interface{}
 	err = json.Unmarshal(body, &contentBody)
+	if err != nil {
+		return nil, err
+	}
 
 	propertyIndex := fmt.Sprintf("%s_list", query.Collection)
 	return contentBody[propertyIndex], nil
