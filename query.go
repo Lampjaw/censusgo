@@ -4,6 +4,7 @@
 package censusgo
 
 import (
+	"encoding/json"
 	"strings"
 )
 
@@ -123,12 +124,20 @@ func (q *query) SetLanguageString(language string) *query {
 	return q
 }
 
-func (q *query) GetResults() ([]interface{}, error) {
-	return q.censusClient.executeQuery(q)
+func (q *query) GetResults() ([]byte, error) {
+	res, err := q.censusClient.executeQuery(q)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(res)
 }
 
-func (q *query) GetResultsBatch() ([]interface{}, error) {
-	return q.censusClient.executeQueryBatch(q)
+func (q *query) GetResultsBatch() ([]byte, error) {
+	res, err := q.censusClient.executeQueryBatch(q)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(res)
 }
 
 func (q *query) GetUrl() string {
