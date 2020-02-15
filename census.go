@@ -4,7 +4,7 @@
 package censusgo
 
 // VERSION for semver
-const VERSION = "1.1.0"
+const VERSION = "1.2.0"
 
 // QueryBuilder is a factory used to generate census queries that share the same census service ID and collection namespace
 type QueryBuilder struct {

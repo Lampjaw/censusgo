@@ -42,14 +42,14 @@ func (c *CensusClient) executeQuery(query *Query) ([]interface{}, error) {
 		return nil, err
 	}
 
-	var contentBody map[string][]interface{}
+	var contentBody map[string]interface{}
 	err = json.Unmarshal(body, &contentBody)
 	if err != nil {
 		return nil, err
 	}
 
 	propertyIndex := fmt.Sprintf("%s_list", query.Collection)
-	return contentBody[propertyIndex], nil
+	return contentBody[propertyIndex].([]interface{}), nil
 }
 
 func (c *CensusClient) executeQueryBatch(query *Query) ([]interface{}, error) {
